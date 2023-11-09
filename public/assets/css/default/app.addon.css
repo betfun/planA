@@ -1,0 +1,211 @@
+@font-face {
+  font-family: 'fontello';
+  src: url('../fonts/fontello.woff?49679379') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class*="fontello-icon icon-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: never;
+
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+
+.fontello-icon.icon-trx:before { content: '\e800'; } /* '' */
+.fontello-icon.icon-usdt:before { content: '\e801'; } /* '' */
+.fontello-icon.icon-r_usdt:before { content: '\e802'; } /* '' */
+.fontello-icon.icon-r_trx:before { content: '\e803'; } /* '' */
+
+.cursor-pointer	{cursor: pointer;}
+
+.container-loading {
+  position: relative;
+}
+.container-loader {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--app-component-bg);
+  opacity: .9;
+  z-index: 1030;
+  -webkit-animation: fadeIn .2s;
+  animation: fadeIn .2s;
+  border-radius: 0 0 4px 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.decimal-number small {
+  font-size: .575em;
+  opacity: 0.9;
+}
+
+.panel-tools-item {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.w-sm-auto {
+  width: auto !important;
+} 
+
+/* table fixed */
+.table-layout-fixed {
+  table-layout:fixed;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #f3c8c8;
+}
+
+.input-search-group {
+  /*width: 400px;*/
+}
+
+.colgroupthead {
+  border-top: 0px !important;
+  border-top-color: #ced4da !important;
+}
+
+/* custom checkbox */
+.form-switch-primary:checked {
+  background-color: #348fe2 !important;
+  border-color: #348fe2 !important;
+}
+
+.form-switch-danger:checked {
+  background-color: #f44336 !important;
+  border-color: #f44336 !important;
+}
+
+textarea.norerezie {
+  resize: none;
+  /*overflow: hidden;*/
+}
+
+/* text ellipsis */
+.txtellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;  
+}
+
+/* 사이드 메뉴 */
+.menu-link {
+  color: #fff !important;
+}
+
+.app-sidebar .menu .menu-item .menu-link .menu-label {
+  color: #000;
+  background-color: #ffd400;
+}
+
+/* 모달 관련 */
+.modal-dialog .overlay {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin: -1px;
+  z-index: 1052;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #666f76;
+  border-radius: 0.3rem;
+}
+
+.btn-modal-tool {
+  background-color: transparent;
+  color: #adb5bd;
+  font-size: .875rem;
+  /*margin: -.75rem 0;*/
+  padding: .25rem .5rem;
+}
+
+.modal .modal-header {
+  flex: 0;
+}
+
+/* 거래내역 상단 회원 정보*/
+.user-simple-info .list-group-item {
+  display: flex;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  word-break: break-all;
+}
+
+.user-simple-info .item-label {
+  min-width: 100px;
+  font-weight: 600;
+}
+
+
+@media (max-width: 576px) {
+  .panel-tools-item {
+    flex-flow: column;
+  }
+
+  .panel-tools-item .input-group {
+    width: 100%  !important;
+    margin-bottom: 0 !important;
+    margin-top: 0.25rem !important;
+  }
+
+  .w-sm-auto {
+    width: 100% !important;
+  }  
+
+  .mb-sm-max-3 {
+    margin-bottom: 0.75rem !important;
+  }
+  .mb-sm-max-2 {
+    margin-bottom: 0.5rem !important;
+  }  
+  .mb-sm-max-1 {
+    margin-bottom: 0.25rem !important;
+  }  
+  
+}

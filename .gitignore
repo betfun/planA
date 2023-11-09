@@ -1,0 +1,14 @@
+
+# Dependency directories
+node_modules/
+temp/
+# Optional npm cache directory
+.npm
+
+# dotenv environment variables file
+.env
+.env.dev
+.env.pro
+.env.test
+
+package-lock.json

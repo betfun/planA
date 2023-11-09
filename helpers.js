@@ -1,0 +1,3 @@
+
+
+exports.moment = require('moment');
