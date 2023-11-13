@@ -1,1 +1,240 @@
-ccc
+<%- include('header'); %>
+<!-- BEGIN breadcrumb -->
+<ol class="breadcrumb float-xl-end">
+  <li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
+  <li class="breadcrumb-item active">Dashboard</li>
+</ol>
+<!-- END breadcrumb -->
+<!-- BEGIN page-header -->
+<h1 class="page-header mb-3">Dashboard</h1>
+<!-- END page-header -->
+<div class="row">
+  <!-- BEGIN col-3 -->
+  <div class="col-sm-3">
+    <div class="widget widget-stats bg-blue">
+      <div class="stats-icon"><i class="fontello-icon icon-r_usdt"></i></div>
+      <div class="stats-info">
+        <h4>잔액</h4>
+        <p class="decimal-number"></p>	
+      </div>
+      <div class="stats-link">
+        <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+  <!-- END col-3 -->
+  <!-- BEGIN col-3 -->
+  <div class="col-sm-3">
+    <div class="widget widget-stats bg-info">
+      <div class="stats-icon"><i class="fontello-icon icon-trx"></i></div>
+      <div class="stats-info">
+        <h4>수수료 잔액</h4>
+        <p class="decimal-number"></p>	
+      </div>
+      <div class="stats-link">
+        <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+  <!-- END col-3 -->
+  <!-- BEGIN col-3 -->
+  <div class="col-sm-3">
+    <div class="widget widget-stats bg-green">
+      <div class="stats-icon"><i class="fa fa-clock"></i></div>
+      <div class="stats-info">
+        <h4>UnionMK 미승인</h4>
+        <p class="decimal-number"></p>	
+      </div>
+      <div class="stats-link">
+        <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+  <!-- END col-3 -->
+  <!-- BEGIN col-3 -->
+  <div class="col-sm-3">
+    <div class="widget widget-stats bg-green">
+      <div class="stats-icon"><i class="fa fa-clock"></i></div>
+      <div class="stats-info">
+        <h4>인출 미승인</h4>
+        <p class="decimal-number"></p>	
+      </div>
+      <div class="stats-link">
+        <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BEGIN row -->
+<div class="row">
+
+  <!-- BEGIN col-6 -->
+  <div class="col-xl-6 col-md-6 ui-sortable">
+    <div class="panel panel-inverse">
+      <div class="panel-heading ui-sortable-handle">
+        <h4 class="panel-title">최근 거래 내역(UnionMK)</h4>
+        <div class="panel-heading-btn">
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand" data-bs-original-title="" title="" data-tooltip-init="true"><i class="fa fa-expand"></i></a>
+          <!--a href="javascript:;" class="btn btn-xs btn-icon btn-success" onclick="getUnionMkTransList()"><i class="fa fa-redo"></i></a-->
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-toggle="panel-collapse"><i class="fa fa-minus"></i></a>          
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr class="text-center">
+                <th>NO</th>
+                <th nowrap>보낸 사람</th>
+                <th nowrap>받은 사람</th>
+                <th nowrap>금액</th>
+                <th nowrap>날짜</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-inverse">
+      <div class="panel-heading ui-sortable-handle">
+        <h4 class="panel-title">최근 거래 내역</h4>
+        <div class="panel-heading-btn">
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand" data-bs-original-title="" title="" data-tooltip-init="true"><i class="fa fa-expand"></i></a>
+          <!--a href="javascript:;" class="btn btn-xs btn-icon btn-success" onclick="getUserTransList()"><i class="fa fa-redo"></i></a-->
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-toggle="panel-collapse"><i class="fa fa-minus"></i></a>          
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr class="text-center">
+                <th>NO</th>
+                <th nowrap>보낸 사람</th>
+                <th nowrap>받은 사람</th>
+                <th nowrap>금액</th>
+                <th nowrap>날짜</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END col-6 -->
+
+  <!-- BEGIN col-6 -->
+  <div class="col-xl-6 col-md-6 ui-sortable">
+    <div class="panel panel-inverse">
+      <div class="panel-heading ui-sortable-handle">
+        <h4 class="panel-title">최근 인출 요청 내역</h4>
+        <div class="panel-heading-btn">
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand" data-bs-original-title="" title="" data-tooltip-init="true"><i class="fa fa-expand"></i></a>
+          <!--a href="javascript:;" class="btn btn-xs btn-icon btn-success" onclick="getWithdrawList()"><i class="fa fa-redo"></i></a-->
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-toggle="panel-collapse"><i class="fa fa-minus"></i></a>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr class="text-center">
+                <th>NO</th>
+                <th nowrap>이름</th>
+                <th nowrap>이메일</th>
+                <th nowrap>전화번호</th>
+                <th nowrap>포인트</th>
+                <th nowrap>승인</th>
+                <th nowrap>날짜</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-inverse">
+      <div class="panel-heading ui-sortable-handle">
+        <h4 class="panel-title">최근 가입자</h4>
+        <div class="panel-heading-btn">
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand" data-bs-original-title="" title="" data-tooltip-init="true"><i class="fa fa-expand"></i></a>
+          <!--a href="javascript:;" class="btn btn-xs btn-icon btn-success" onclick="getNewUserList()"><i class="fa fa-redo"></i></a-->
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-toggle="panel-collapse"><i class="fa fa-minus"></i></a>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr class="text-center">
+                <th>NO</th>
+                <th nowrap>이름</th>
+                <th nowrap>이메일</th>
+                <th nowrap>전화번호</th>
+                <th nowrap>가입일</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END col-6 -->
+
+</div>
+<!-- END row -->
+
+<script>
+  function setPayout(name, b) {
+    pwUtils.ajaxJSON(
+      '/api/setting',
+      {name:name, value:b?'0':'1'},
+      (data) => {                  
+        switch(data['result']) {
+          case 100:
+            pwUtils.swalSuccess('변경되었습니다.');
+            break;
+          default:
+            alert('잘못된 접근 입니다.');
+            break;
+        }                          
+      },
+      (j) => {        
+        alert(j.responseJSON.error.message??'서버 에러로 실패 하였습니다. 새로고침후 다시 시도해주세요');
+    });      
+    
+  }
+
+  function getUnionMkTransList() {
+
+  }
+
+  function getUserTransList() {
+
+  }
+
+  function getWithdrawList() {
+    
+  }
+
+  function getNewUserList() {
+    
+  }
+</script>
+
+<%- include('footer'); %>

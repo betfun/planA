@@ -1,4 +1,4 @@
-let pwUtils = {
+let appUtils = {
   showAlert : (msg) => {
     alert(msg);
   },
@@ -172,7 +172,7 @@ let pwUtils = {
       frm.find('input[name=s_order]').val(s_order);
       frm.find('input[name=s_orderdir]').val(s_orderdir);
 
-      pwUtils.page_link();
+      appUtils.page_link();
     }
   },
   //달력표시
@@ -564,7 +564,7 @@ let pwUtils = {
     let headkeys = Object.keys(headers);
     let rows = [];
     for (var i in list) {
-      rows.push(pwUtils.filterObject(list[i], headkeys));
+      rows.push(appUtils.filterObject(list[i], headkeys));
     }
 
     let wb = XLSX.utils.book_new();    
@@ -575,7 +575,7 @@ let pwUtils = {
     XLSX.utils.sheet_add_json(ws, rows, { origin: 'A2', skipHeader: true });
     XLSX.utils.sheet_add_aoa(ws,[headval], {origin: 'A1'});
 
-    pwUtils.autofitColumns(rows, ws, headkeys);
+    appUtils.autofitColumns(rows, ws, headkeys);
 
     XLSX.utils.book_append_sheet(wb, ws, title);
 
@@ -597,7 +597,7 @@ let pwUtils = {
     let headvals = Object.values(headers);
     let rows = [];
     for (var i in list) {
-      rows.push(Object.values(pwUtils.filterObject(list[i], headkeys)));
+      rows.push(Object.values(appUtils.filterObject(list[i], headkeys)));
     }
 
     var _link = document.createElement( 'a' );
@@ -714,19 +714,19 @@ let pwUtils = {
       () => {
         let frm = $(`${modal} form[name=FrmAdminInfo]`);
 
-        if (pwUtils.checkFormValidation(frm[0]) == false) return;
+        if (appUtils.checkFormValidation(frm[0]) == false) return;
 
         modalUtils.disableButton(modal);
         modalUtils.showOverlay(modal);
 
         let formData = frm.serialize();
 
-        pwUtils.ajaxJSON('/admin/setPassword', formData, function(dt) {
+        appUtils.ajaxJSON('/admin/setPassword', formData, function(dt) {
 
           if (dt.result == 100) {
-            pwUtils.swalSuccess('수정되었습니다', ()=>{pwUtils.page_reload()});
+            appUtils.swalSuccess('수정되었습니다', ()=>{appUtils.page_reload()});
           } else {
-            pwUtils.showAlert(dt.msg);   
+            appUtils.showAlert(dt.msg);   
             modalUtils.enableButton(modal); 
           }                       
 
@@ -735,7 +735,7 @@ let pwUtils = {
       },
       () => {
 
-        pwUtils.ajaxJSON('/admin/myInfo', {}, function(dt) {
+        appUtils.ajaxJSON('/admin/myInfo', {}, function(dt) {
 
         if (dt.result == 100) {
 
@@ -770,7 +770,7 @@ let pwUtils = {
           }
 
         } else {
-          pwUtils.showAlert(dt.msg);
+          appUtils.showAlert(dt.msg);
           modalUtils.hide(modal);              
         }
 

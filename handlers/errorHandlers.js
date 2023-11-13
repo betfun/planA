@@ -37,9 +37,11 @@ exports.developmentErrors = (err, req, res, next) => {
     stackHighlighted: err.stack.replace(/[a-z_-\d]+.js:\d+:\d+/gi, '<mark>$&</mark>'),
   };
 
-  res.status(500).json({
+  return res.status(500).send(err.message);
+
+  res.status(500).text({
     success: false,
-    message: 'Oops ! Error in Server.. ',
+    message: 'Dev Oops ! Error in Server.. ',
     error: errorDetails//err.message, //err
   });
 };

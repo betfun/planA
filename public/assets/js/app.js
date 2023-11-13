@@ -859,7 +859,7 @@ var handlePanelAction = function() {
 				panelTooltip.hide();
 			}      
 			var target = this.closest('.'+ app.panel.class);
-      pwUtils.showLoading(target);
+      appUtils.showLoading(target);
       /*
 			if (!target.classList.contains(app.panel.loadingClass)) {
 				var targetBody = target.querySelector('.'+ app.panel.bodyClass);
@@ -2963,14 +2963,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	App.init();
 	App.restartGlobalFunction();
 
-  pwUtils.setDatePicker('.dtpicker');
+  appUtils.setDatePicker('.dtpicker');
 
   $('[data-toggle="tooltip"]').tooltip();
 
   $('#s_value').keyup(function(event) {
     
-    if (event.which==13 && typeof pwUtils == 'object') { 
-      pwUtils.page_search()
+    if (event.which==13 && typeof appUtils == 'object') { 
+      appUtils.page_search()
     };
   })
 });
