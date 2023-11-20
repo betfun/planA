@@ -200,41 +200,7 @@
 <!-- END row -->
 
 <script>
-  function setPayout(name, b) {
-    pwUtils.ajaxJSON(
-      '/api/setting',
-      {name:name, value:b?'0':'1'},
-      (data) => {                  
-        switch(data['result']) {
-          case 100:
-            pwUtils.swalSuccess('변경되었습니다.');
-            break;
-          default:
-            alert('잘못된 접근 입니다.');
-            break;
-        }                          
-      },
-      (j) => {        
-        alert(j.responseJSON.error.message??'서버 에러로 실패 하였습니다. 새로고침후 다시 시도해주세요');
-    });      
-    
-  }
-
-  function getUnionMkTransList() {
-
-  }
-
-  function getUserTransList() {
-
-  }
-
-  function getWithdrawList() {
-    
-  }
-
-  function getNewUserList() {
-    
-  }
+  
 </script>
 
 <%- include('footer'); %>

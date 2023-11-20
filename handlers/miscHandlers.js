@@ -73,6 +73,10 @@ module.exports = {
     let dt = moment(new Date(_dt)).format(_fmt);
     return dt == 'Invalid date' ? '' : dt;
   },
+  getNow: function(_fmt = 'YYYY-MM-DD HH:mm:ss') {
+    //return moment(new Date()).format(_fmt);
+    return moment().format(_fmt);
+  },
   /**
    * insert space bank number
    * @param {string} num 

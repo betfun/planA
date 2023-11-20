@@ -146,36 +146,14 @@ module.exports = _dbHandlers = {
     let rs = await db.query(_q, _param);
     return rs;
   },
-  /**
-   * UnionMK USDT Transaction List
-   */
-  getUnionMkTransList: async () => {
-    return await db.query(`SELECT A.type, C.name AS name, B.name AS other_name, A.memo, A.change AS \`change\`, A.regdate AS regdate FROM history A LEFT JOIN user B ON A.user_id = B.id LEFT JOIN user C ON A.other_user_id = C.id WHERE (A.type = 1 OR A.type = 4) AND (B.name = 'UnionMK' OR C.name = 'UnionMK') ORDER BY regdate DESC LIMIT 5`);
-  },
-  /**
-   * User USDT Transaction List
-   */
-  getUserTransList: async () => {
-    return await db.query(`SELECT A.type, C.name AS name, B.name AS other_name, A.memo, A.change AS \`change\`, A.regdate AS regdate FROM history A LEFT JOIN user B ON A.user_id = B.id LEFT JOIN user C ON A.other_user_id = C.id WHERE (A.type = 1 OR A.type = 4) AND (B.name != 'UnionMK' AND C.name != 'UnionMK') ORDER BY regdate DESC LIMIT 5`);
-  },
-  /**
-   * Withdraw List
-   */
-  getWithdrawList: async () => {
-    return await db.query(`SELECT B.name AS name, B.tel AS tel, B.country_code AS country_code, B.account AS account, A.amount AS amount, A.approve, A.regdate AS regdate FROM withdrawal A LEFT JOIN user B ON A.user_id = B.id ORDER BY regdate DESC LIMIT 5`);
-  },
-  /**
-   * NewUserList
-   */
-  getNewUserList: async () => {
-    return await db.query(`SELECT name, account, tel, country_code, regdate FROM user ORDER BY regdate DESC LIMIT 5`);
-  },
-  /**
-   * 
-   * @returns 
-   */
-  getUserPayPoint: async () => {
-    const sum = await db.query(`SELECT IFNULL(SUM(balance), 0) AS sum FROM user`);
-    return sum[0][0]['sum'];
+  getUserInfo: async (_useridx, _col = 'idx') => {    
+    return await _dbHandlers.getOneRow(`
+      Select 
+        U.*, W.f_taddress, W.f_balance, W.f_token, W.f_tnetwork,
+        F.f_email as f_referralemail
+      From tb_user U       
+      Left Join tb_wallet W on U.idx = W.f_useridx 
+      Left Join tb_user F on U.idx = F.f_referral
+      Where U.${_col} = ? limit 1`, [_useridx]);
   }
 } 

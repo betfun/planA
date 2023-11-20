@@ -2960,7 +2960,9 @@ var App = function () {
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
-	App.init();
+	App.init({
+    disableDraggablePanel: true
+  });
 	App.restartGlobalFunction();
 
   appUtils.setDatePicker('.dtpicker');

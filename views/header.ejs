@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="../img/favicon.ico">
   <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
   <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
-  <title>PreWallet</title>
+  <title><%=process.env.PKG_NAME%></title>
   
   <!-- ================== BEGIN core-css ================== -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -95,12 +95,12 @@
               <div class="menu-icon">
                 <i class="fa-solid fa-user"></i>
               </div>
-              <div class="menu-text">유저</div>
+              <div class="menu-text">회원</div>
               <div class="menu-caret"></div>
             </a>
             <div class="menu-submenu" style="display: block;">
               <div class="menu-item">
-                <a href="/user?s_label=전체" class="menu-link">
+                <a href="/user/list?s_label=전체" class="menu-link">
                   <div class="menu-text">전체</div>
                 </a>
               </div>        

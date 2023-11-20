@@ -12,6 +12,8 @@ const helpers = require('./helpers');
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/user');
+const apiRouter = require('./routes/api');
 
 const errorHandlers = require('./handlers/errorHandlers');
 
@@ -24,18 +26,17 @@ app.set('view engine', 'ejs');
 
 const whitelist = [];
 
-if (process.env.NODE_ENV == 'development') whitelist.push(`http://127.0.0.1:${app.get('port')}/`);
+if (process.env.NODE_ENV == 'development') whitelist.push(`http://127.0.0.1:${process.env.PORT}`);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log(`origin : ${origin}`);
     if (!origin || whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
     }
   },
-  origin: true,
+  //origin: true,
   credentials: true
 }
 
@@ -102,6 +103,8 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRouter);
 app.use('/', [commonController.isAuthorized, commonController.getLoggedInfo], indexRouter);
+app.use('/user', [commonController.isAuthorized, commonController.getLoggedInfo], userRouter)
+app.use('/api', [commonController.isAuthorized, commonController.getLoggedInfo], apiRouter)
 
 app.use(errorHandlers.notFound);
 
