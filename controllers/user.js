@@ -111,7 +111,7 @@ exports.userList = async (req, res) => {
       A.*, W.f_balance, f_token, R.f_email as f_referralemail
     From tb_user A 
       Left Join tb_wallet W on A.idx = W.f_useridx 
-      Left Join tb_user R on R.f_referral = A.idx
+      Left Join tb_user R on A.f_referral = R.idx
     ${wheres} ${orders} LIMIT ?, ?`, params);
 
   return res.render('user/list', { 

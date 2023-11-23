@@ -148,30 +148,6 @@
 
     window.addEventListener('DOMContentLoaded', (event) => {
 
-      var win = navigator.platform.indexOf('Win') > -1;
-
-      if (win && document.querySelector('#sidenav-scrollbar')) {
-        var options = {
-          damping: '0.5'
-        }
-        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-      }
-
-      $('.menu-link').each((i, v) => {
-        const t = $(v);
-        if (t.attr('href') == window.location.pathname + window.location.search)
-            t.parent().addClass('active');
-        if (t.attr('link') && t.attr('link').split(',').includes(window.location.pathname + window.location.search))
-            t.parent().addClass('active');
-      });      
-
-      new ClipboardJS('.clipboardjs', {
-        text: function(trigger) {
-          return $(trigger).data('cliptext');
-        }
-      }).on('success', function(e) {
-        pwUtils.makeToast('클립보드에 복사되었습니다.');
-      }); 
 
     });
     

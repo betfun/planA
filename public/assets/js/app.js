@@ -642,6 +642,17 @@ var handleSidebarMenu = function() {
 	var menuBaseSelector = '.'+ app.sidebar.class +' .'+ app.sidebar.menu.class +' > .'+ app.sidebar.menu.itemClass +'.'+ app.sidebar.menu.hasSubClass;
 	var submenuBaseSelector = ' > .'+ app.sidebar.menu.submenu.class +' > .'+ app.sidebar.menu.itemClass + '.' + app.sidebar.menu.hasSubClass;
 	
+  // Make id for menu-link;
+  let elms = [].slice.call(document.querySelectorAll(app.sidebar.id + ' .' + app.sidebar.menu.itemLinkClass));
+  elms.map(function(elm, i) {    
+    $(elm).data(`index`, i+1);    
+    if ($(elm).attr('href') != 'javascript:;') {
+      elm.onclick = function(e) {
+        localStorage.setItem('currentLink', i+1);
+      }
+    }    
+  }); 
+
 	// 2.1 Menu - Toggle / Collapse
 	var menuLinkSelector =  menuBaseSelector + ' > .'+ app.sidebar.menu.itemLinkClass;
 	var menus = [].slice.call(document.querySelectorAll(menuLinkSelector));
@@ -2779,6 +2790,29 @@ var getCssVariable = function(variable) {
 };
 
 
+/*checkSidebarActive
+------------------------------------------------ */
+var checkSidebarActive = function () {
+  
+  let beforeMenulink = localStorage.getItem('currentLink') ?? 1;
+  
+  let elms = [].slice.call(document.querySelectorAll(app.sidebar.id + ' .' + app.sidebar.menu.itemLinkClass));
+  elms.map(function(elm) {
+    if ($(elm).data('index') == beforeMenulink) {
+      var targetElms = getParents(elm);
+      if (targetElms) {
+        targetElms.map(function(targetElm) {
+          if (targetElm.classList && targetElm.classList.contains(app.sidebar.menu.itemClass)) {
+            targetElm.classList.add(app.sidebar.menu.activeClass);
+          }
+        });        
+      }
+      elm.classList.add(app.sidebar.menu.activeClass);
+    };
+  })  
+
+}
+
 /* Application Controller
 ------------------------------------------------ */
 var App = function () {
@@ -2824,6 +2858,8 @@ var App = function () {
 			if (!setting || (setting && !setting.disableSidebarScrollMemory)) {
 				handleSidebarScrollMemory();
 			}
+
+      checkSidebarActive();
 		},
 		initTopMenu: function() {
 			handleUnlimitedTopMenuRender();
@@ -2963,6 +2999,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	App.init({
     disableDraggablePanel: true
   });
+
 	App.restartGlobalFunction();
 
   appUtils.setDatePicker('.dtpicker');
@@ -2974,5 +3011,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
     if (event.which==13 && typeof appUtils == 'object') { 
       appUtils.page_search()
     };
-  })
+  });
+
+  if (typeof ClipboardJS == 'function') {
+    new ClipboardJS('.clipboardjs', {
+      text: function(trigger) {
+        return $(trigger).data('cliptext');
+      }
+    }).on('success', function(e) {
+      pwUtils.makeToast('클립보드에 복사되었습니다.');
+    }); 
+  }
 });
