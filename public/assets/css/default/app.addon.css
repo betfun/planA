@@ -171,6 +171,11 @@ textarea.norerezie {
   flex: 0;
 }
 
+/* checkbox pointer */
+.form-check-label, .form-check-input {
+  cursor: pointer;
+}
+
 /* 거래내역 상단 회원 정보*/
 .user-simple-info .list-group-item {
   display: flex;

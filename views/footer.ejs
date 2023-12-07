@@ -63,68 +63,84 @@
   </div>
   <!-- //.modal md -->
 
-  <div id="FrmAdminInfo" class="d-none">
-    <form name="FrmAdminInfo" method="post">
-      <input type="hidden" name="id">
+  <div id="FrmUserInfo" class="d-none">
+    <form role="form" name="user-editor" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="useridx">    
       <div class="row">
-        <div class="col-12 mb-10px">
-          <label class="form-label">이름</label>
-          <input type="text" data-vali='{"fNam":"이름"}' class="form-control" name="name" value="">
-        </div>      
-      </div>
-      <div class="row">
-        <div class="col-12 mb-10px">
-          <label class="form-label">아이디</label>
-          <input type="text" data-vali='{"fNam":"아이디"}' class="form-control" name="account" value="">
-        </div>      
-      </div>
-      <div class="row">
-        <div class="col-12 mb-10px">
-          <label class="form-label">Password</label>
-          <input type="password" data-vali='{"fNam":"비밀번호"}' class="form-control" name="password" value="">
-        </div>      
-      </div>
-      <div class="row new-password-area" style="display:none">
-        <div class="col-12 mb-10px">
-          <label class="form-label">신규 Password</label>
-          <input type="password" data-vali='{"fNam":"신규 비밀번호"}' class="form-control" name="new_password" value="" disabled>
-        </div>      
-      </div>
-      <div class="row">
-        <div class="col-12 mb-10px">
-          <label class="form-label">권한</label>
-          <div>
-            <div class="form-check form-switch mb-1">
-              <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="permission" value="1"> 유저 열람
-              </label>
+        <div class="col-md-6">
+          <div class="row mb-10px">
+            <div class="col-12">
+              <label class="form-label">Email</label>
+              <input type="email" name="f_email" data-vali='{"fMail":"이메일"}' class="form-control" placeholder="이메일" value="">
+            </div>            
+          </div>
+          <div class="row mb-10px">
+            <div class="col-12">
+              <label class="form-label">Name</label>
+              <input type="text" name="f_name" data-vali='{"fNam":"이름"}' class="form-control" placeholder="이름" value="">
             </div>
-            <div class="form-check form-switch mb-1">
-              <label class="form-check-label">
-              <input class="form-check-input" type="checkbox" name="permission" value="2"> 유저 수정(승인, 그룹설정 포함)
-              </label>
+          </div>
+          <div class="row mb-10px">
+            <div class="col-12">
+              <label class="form-label">Referral Email</label>
+              <input type="text" name="f_referralemail" class="form-control" placeholder="추천인 이메일" value="">
             </div>
-            <div class="form-check form-switch mb-1">
-              <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="permission" value="4"> 유저 지급(수당 지급)
-              </label>
+          </div>        
+          <div class="row mb-10px">
+            <div class="col-6">
+              <label class="form-label">Token Name</label>
+              <input type="text" name="f_token" class="form-control" disabled value="">
             </div>
-            <div class="form-check form-switch mb-1">
-              <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="permission" value="8"> 전송내역 열람(인출 포함)
-              </label>
+            <div class="col-6">
+              <label class="form-label">Token Network</label>
+              <input type="text" name="f_tnetwork" class="form-control" disabled value="">
             </div>
-            <div class="form-check form-switch mb-1">
-              <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="permission" value="16"> 관리자 수정
-              </label>
+          </div>
+  
+          <div class="row mb-10px">
+            <div class="col-12">
+              <label class="form-label">Token Address</label>
+              <input type="text" name="f_taddress" class="form-control" value="">
+            </div>
+          </div>
+          <div class="row mb-10px">
+            <div class="col-12">
+              <label class="form-label">New Password</label>
+              <input type="password" name="password" class="form-control">
+            </div>
+          </div>
+  
+          <div class="row mb-10px">
+            <div class="col-12">
+              <label class="form-label">Conditions</label>
+              <div>
+                <div class="form-check form-check-inline">              
+                  <label class="form-check-label"><input class="form-check-input" type="radio" name="f_status" value="1"> 미등록</label>
+                </div>
+                <div class="form-check form-check-inline">              
+                  <label class="form-check-label"><input class="form-check-input" type="radio" name="f_status" value="2"> 활성</label>
+                </div>
+                <div class="form-check form-check-inline">              
+                  <label class="form-check-label"><input class="form-check-input" type="radio" name="f_status" value="3"> 미활성</label>
+                </div>
+                <div class="form-check form-check-inline">              
+                  <label class="form-check-label"><input class="form-check-input" type="radio" name="f_status" value="9"> 탈퇴</label>
+                </div>
+              </div>
+            </div>          
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row h-100">
+            <div class="col-12  pb-3">
+              <label class="form-label">메모</label>
+              <textarea name="f_memo" class="form-control norerezie" style="height: 100%;" value="" ></textarea>
             </div>
           </div>
         </div>      
       </div>
-      
-    </form>
-  </div>
+    </form>  
+  </div><!--//#FrmUserInfo-->
 
   <!-- ================== BEGIN core-js ================== -->
 	<script src="/assets/js/vendor.min.js"></script>    

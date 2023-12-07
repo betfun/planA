@@ -14,6 +14,8 @@ const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const apiRouter = require('./routes/api');
+const managementRouter = require('./routes/management');
+const historyRouter = require('./routes/history');
 
 const errorHandlers = require('./handlers/errorHandlers');
 
@@ -104,7 +106,9 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/', [commonController.isAuthorized, commonController.getLoggedInfo], indexRouter);
 app.use('/user', [commonController.isAuthorized, commonController.getLoggedInfo], userRouter)
-app.use('/api', [commonController.isAuthorized, commonController.getLoggedInfo], apiRouter)
+app.use('/management', [commonController.isAuthorized, commonController.getLoggedInfo], managementRouter);
+app.use('/api', [commonController.isAuthorized, commonController.getLoggedInfo], apiRouter);
+app.use('/history', [commonController.isAuthorized, commonController.getLoggedInfo], historyRouter);
 
 app.use(errorHandlers.notFound);
 

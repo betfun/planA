@@ -103,7 +103,8 @@ let wasUtils = {
             frm.f_taddress.value = data.f_taddress;
             frm.f_memo.value = data.f_memo;
             frm.f_status.value = data.f_status;
-            
+            frm.f_referralemail.value = data.f_referralemail;
+            console.log(data.f_referralemail);
             //appUtils.autoResize(frm.memo);
             
             modalUtils.hideOverlay(modal)

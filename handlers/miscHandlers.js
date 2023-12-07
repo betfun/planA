@@ -148,5 +148,42 @@ module.exports = {
       num = Math.floor(num/62);
     }
     return s;
-  }  
+  },
+  getTimezones : function(_code = '') {
+    
+    let timezone = {
+      "AE": {tel: '+971', countryName:"United Arab Emirates", zone: 4},
+      "CN": {tel: '+86', countryName:"China", zone: 8},
+      "DE": {tel: '+49', countryName:"Germany", zone: 1},    
+      "ES": {tel: '+34', countryName:"Spain", zone: 1},
+      "FR": {tel: '+33', countryName:"France", zone: 1},
+      "JP": {tel: '+81', countryName:"Japan", zone: 9},
+      "KR": {tel: '+82', countryName:"South Korea", zone: 9},
+      "TH": {tel: '+66', countryName:"Thailand", zone: 7},
+      "US": {tel: '+1', countryName:"United States", zone: -5},
+      "PH": {tel: '+63', countryName:"Philippines", zone: 8},
+      "VN": {tel: '+84', countryName:"Vietnam", zone: 7},
+    };
+
+    if (_code)
+      return timezone[_code] ?? {tel: '+00', countryName:"UTC", zone: 0};
+    else 
+      return timezone;
+  },
+  getLocalTime: function (_dt, _code = 'KR',  _fmt = 'YYYY-MM-DD HH:mm') {    
+    let tz = this.getTimezones(_code);
+
+    if (!_dt) return '';
+
+    let dt = moment(new Date(_dt)).add(tz.zone, 'h').format(_fmt);
+    return dt == 'Invalid date' ? '' : dt;
+  },    
+  getUtcTime: function (_dt, _code = 'KR',  _fmt = 'YYYY-MM-DD HH:mm:ss') {
+    let tz = this.getTimezones(_code);
+
+    if (!_dt) return '';
+
+    let dt = moment(new Date(_dt)).add(tz.zone*-1, 'h').format(_fmt);
+    return dt == 'Invalid date' ? '' : dt;
+  }
 };

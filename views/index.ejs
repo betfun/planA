@@ -14,8 +14,8 @@
     <div class="widget widget-stats bg-blue">
       <div class="stats-icon"><i class="fontello-icon icon-r_usdt"></i></div>
       <div class="stats-info">
-        <h4>잔액</h4>
-        <p class="decimal-number"></p>	
+        <h4>누적낙전</h4>
+        <p class="decimal-number"><%-h.misc.setFormatNumberWithPlacesSmall(sumLossIncome, 2, true)%></p>	
       </div>
       <div class="stats-link">
         <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
@@ -26,10 +26,10 @@
   <!-- BEGIN col-3 -->
   <div class="col-sm-3">
     <div class="widget widget-stats bg-info">
-      <div class="stats-icon"><i class="fontello-icon icon-trx"></i></div>
+      <div class="stats-icon"><i class="fontello-icon icon-r_usdt"></i></div>
       <div class="stats-info">
-        <h4>수수료 잔액</h4>
-        <p class="decimal-number"></p>	
+        <h4>발생수수료</h4>
+        <p class="decimal-number"><%-h.misc.setFormatNumberWithPlacesSmall(sumInfo['agg.acefee'], 2, true)%></p>	
       </div>
       <div class="stats-link">
         <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
@@ -40,10 +40,10 @@
   <!-- BEGIN col-3 -->
   <div class="col-sm-3">
     <div class="widget widget-stats bg-green">
-      <div class="stats-icon"><i class="fa fa-clock"></i></div>
+      <div class="stats-icon"><i class="fontello-icon icon-r_usdt"></i></div>
       <div class="stats-info">
-        <h4>UnionMK 미승인</h4>
-        <p class="decimal-number"></p>	
+        <h4>회원보유</h4>
+        <p class="decimal-number"><%-h.misc.setFormatNumberWithPlacesSmall(sumUserBalance, 2, true)%></p>	
       </div>
       <div class="stats-link">
         <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
@@ -54,10 +54,10 @@
   <!-- BEGIN col-3 -->
   <div class="col-sm-3">
     <div class="widget widget-stats bg-green">
-      <div class="stats-icon"><i class="fa fa-clock"></i></div>
+      <div class="stats-icon"><i class="fa-solid fa-user-plus"></i></div>
       <div class="stats-info">
-        <h4>인출 미승인</h4>
-        <p class="decimal-number"></p>	
+        <h4>등록회원</h4>
+        <p class="decimal-number"><%-h.misc.setFormatNumberWithPlacesSmall(sumInfo['agg.acefee'], 2, true)%></p>	
       </div>
       <div class="stats-link">
         <a href="javascript:;">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
@@ -74,7 +74,7 @@
   <div class="col-xl-6 col-md-6 ui-sortable">
     <div class="panel panel-inverse">
       <div class="panel-heading ui-sortable-handle">
-        <h4 class="panel-title">최근 거래 내역(UnionMK)</h4>
+        <h4 class="panel-title">최근 커미션 내역</h4>
         <div class="panel-heading-btn">
           <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand" data-bs-original-title="" title="" data-tooltip-init="true"><i class="fa fa-expand"></i></a>
           <!--a href="javascript:;" class="btn btn-xs btn-icon btn-success" onclick="getUnionMkTransList()"><i class="fa fa-redo"></i></a-->

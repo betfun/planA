@@ -2,11 +2,11 @@
 <!-- BEGIN breadcrumb -->
 <ol class="breadcrumb float-xl-end">
   <li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
-  <li class="breadcrumb-item active">회원</li>
+  <li class="breadcrumb-item active">커미션 로그</li>
 </ol>
 <!-- END breadcrumb -->
 <!-- BEGIN page-header -->
-<h1 class="page-header mb-3">회원 <% if (s_label) __append(`<small>${s_label}</small>`)%></h1>
+<h1 class="page-header mb-3">커미션 로그</h1>
 <!-- END page-header -->
 
 <div class="row">
@@ -24,8 +24,7 @@
           <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-toggle="panel-collapse"><i class="fa fa-minus"></i></a>
         </div>
       </div><!-- END panel-heading -->
-      <form method="get" name="listForm" id="listForm" autocomplete="off" action="javascript:;;">
-      <input type="hidden" name="s_label" value="<%=s_label%>">      
+      <form method="get" name="listForm" id="listForm" autocomplete="off" action="javascript:;;">      
       <input type="hidden" name="s_page" value="<%=s_page%>">   
       <input type="hidden" name="s_order" value="<%=s_order%>">
       <input type="hidden" name="s_orderdir" value="<%=s_orderdir%>">
@@ -112,17 +111,15 @@
               <thead>              
                 <tr>
                   <th class="text-nowrap w10 p-8px">
-                    <input type="checkbox" class="form-check-input" onchange="$('input[name=useridx]').prop('checked', this.checked);">
+                    <input type="checkbox" class="form-check-input" onchange="$('input[name=transidx]').prop('checked', this.checked);">
                   </th>                  
-                  <th class="text-nowrap sorting <%-h.misc.checkOrder('A.f_name', s_order, s_orderdir)%>" data-order="A.f_name" onclick="wasUtils.setOrder(this)">이름</th>
-                  <th class="text-nowrap sorting <%-h.misc.checkOrder('A.f_email', s_order, s_orderdir)%>" data-order="A.f_email" onclick="wasUtils.setOrder(this)">이메일</th>
-                  <th class="text-nowrap">추천인</th>
-                  <th class="text-nowrap">누적수수료 <i class="fa-solid fa-receipt text-danger" data-toggle="tooltip" title="발생한 누적 수수료"></i></th>
-                  <th class="text-nowrap">누적배당 <i class="fa-solid fa-receipt text-danger" data-toggle="tooltip" title="지금까지 받은 배당"></i></th>
-                  <th class="text-nowrap">보유</th>                  
+                  <th class="text-nowrap sorting <%-h.misc.checkOrder('U.f_name', s_order, s_orderdir)%>" data-order="U.f_name" onclick="wasUtils.setOrder(this)">이름</th>
+                  <th class="text-nowrap sorting <%-h.misc.checkOrder('U.f_email', s_order, s_orderdir)%>" data-order="U.f_email" onclick="wasUtils.setOrder(this)">이메일</th>
+                  <th class="text-nowrap">구분</th>
+                  <th class="text-nowrap">수량</th>
+                  <th class="text-nowrap">주소</th>                  
                   <th class="text-nowrap">상태</th>                  
-                  <th class="text-nowrap w80 sorting <%-h.misc.checkOrder('A.idx', s_order, s_orderdir)%>" data-order="A.idx" onclick="wasUtils.setOrder(this)">가입일</th>
-                  <th class="text-nowrap w40">기능</th>
+                  <th class="text-nowrap w80 sorting <%-h.misc.checkOrder('A.idx', s_order, s_orderdir)%>" data-order="A.idx" onclick="wasUtils.setOrder(this)">등록일</th>
                 </tr>
               </thead>
               <tbody>
@@ -139,17 +136,35 @@
                       let status = el.f_status;
                       switch (status) {
                         case 1:
-                          status = `<i class="fa-solid fa-user-slash" data-toggle="tooltip" title="미등록"></i>`;
+                          status = `대기`;
                           break;
                         case 2:
-                          status = `<i class="fa-solid fa-sitemap text-blue-700" data-toggle="tooltip" title="활성"></i>`;
+                          status = `전송중`;
                           break;
                         case 3:
-                          status = `<i class="fa-solid fa-ban text-red-700" data-toggle="tooltip" title="미활성"></i>`;
+                          status = `완료`;
+                          break;
+                        case 4:
+                          status = `실패`;
                           break;
                         case 9:
-                          status = `<i class="fa-solid fa-trash-can text-gray-300" data-toggle="tooltip" title="삭제"></i>`;
+                          status = `삭제`;
                           break;
+                        default:
+                          break;
+                      }
+
+                      let ttype = el.f_type;
+                      switch (ttype) {
+                        case 1:
+                          ttype = 'Ace입금';
+                          break;                      
+                        case 2:
+                          ttype = '롤업';
+                          break;                      
+                        case 3:
+                          ttype = '출금';
+                          break;                      
                         default:
                           break;
                       }
@@ -158,28 +173,22 @@
                   <td>
                     <input type="checkbox" class="form-check-input"  name="useridx" value="<%-el.idx%>">
                   </td>
-                  <td class="text-end"><%=el.f_name%></td>
+                  <td><%=el.f_name%></td>
                   <td><%=el.f_email%></td>
-                  <td><%=el.f_referralemail%></td>
-                  <td class="text-end">
-                    <%-h.misc.setFormatNumberWithPlacesSmall(el.f_sumfee, 2, true)%>
+                  <td>
+                    <%=ttype%>
                   </td>
                   <td class="text-end">
-                    <%-h.misc.setFormatNumberWithPlacesSmall(el.f_sumcoms, 2, true)%>
+                    <%-h.misc.setFormatNumberWithPlacesSmall(el.f_amount, 2, true)%>
                   </td>
                   <td class="text-end">
-                    <%-h.misc.setFormatNumberWithPlacesSmall(el.f_balance, 2, true)%>
+                    
                   </td>
-                  <td class="text-center fs-16px">                    
+                  <td class="text-center">                    
                     <%-status%>
                   </td>
                   <td class="text-center">          
                     <%=h.misc.formatDateTime(el.f_regAt)%>
-                  </td>
-                  <td class="text-center">
-                    <a href="javascript:;;" class="btn btn-xs btn-outline-danger me-2 mb-1 text-nowrap" onclick="wasUtils.setUserInfo(<%=el.idx%>);">
-                      <i class="fa-solid fa-pen-to-square"></i> 수정
-                    </a>                    
                   </td>
                 </tr>
                 <%                      

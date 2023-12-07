@@ -2,6 +2,7 @@ const dbHandler = require('../handlers/dbHandlers');
 const miscHandlers = require('../handlers/miscHandlers');
 const paginationHandlers = require('../handlers/paginationHandlers');
 const cryptHandlers = require('../handlers/cryptHandlers');
+const excelHandler = require('../handlers/excelHandlers');
 
 exports.userList = async (req, res) => {
 
@@ -25,7 +26,8 @@ exports.userList = async (req, res) => {
     'latest1m': '최근1개월'
   }
 
-  let s_statusArray = {    
+  let s_statusArray = {
+    '0': '전체',
     '1': '미등록',
     '2': '정상', 
     '3': '비활성', 
@@ -47,7 +49,7 @@ exports.userList = async (req, res) => {
 
   let s_order = miscHandlers.getRequest(query.s_order, 'A.idx');    
   let s_orderdir = miscHandlers.getRequest(query.s_orderdir, 'desc');
- 
+
   let params = [];
   let wheres = 'where 1=1';
 
@@ -173,6 +175,7 @@ exports.setUserInfo = async (req, res) => {
   let f_tnetwork = miscHandlers.getRequest(req.body.f_tnetwork);
   let f_taddress = miscHandlers.getRequest(req.body.f_taddress);
   let password = miscHandlers.getRequest(req.body.password);
+  let f_referralemail = miscHandlers.getRequest(req.body.f_referralemail);
 
   let f_status = miscHandlers.getRequest(req.body.f_status, 0);
 
@@ -181,6 +184,8 @@ exports.setUserInfo = async (req, res) => {
   let param = [f_name, f_memo];
 
   let rst = {result:0, msg:''};
+
+  let conn = null;
 
   try {
 
@@ -196,12 +201,7 @@ exports.setUserInfo = async (req, res) => {
       password_query = ', f_pwd = ? '
     }
 
-    if (f_status) {
-      param.push(f_status);
-      status_query = ', f_status = ? '
-    } 
-
-    param.push(useridx);    
+    conn = await dbHandler.getConnection();
 
     let user = await dbHandler.getUserInfo(useridx);
     
@@ -210,23 +210,106 @@ exports.setUserInfo = async (req, res) => {
       throw new Error('해당 계정을 찾을 수 없습니다.');
     }
 
-    await dbHandler.exeQuery(`
+    user.f_referralemail = user.f_referralemail ?? '';
+
+    await dbHandler.beginTransaction(conn);
+
+    if (f_referralemail != user.f_referralemail) {      
+
+      let rsSubNodes = await dbHandler.getUserSubNodes(user.idx, 'count(*) as cnt');
+        
+      if (rsSubNodes['cnt'] > 0) throw new Error('하위 노드가 존재하는 계정은 추천인 변경이 불가능 합니다.');      
+      
+      if (f_referralemail) {
+
+        if (f_referralemail == user.f_email) throw new Error('회원 본인은 추천인은 될수 없습니다.');
+
+        let rsNode = await dbHandler.getNode(user.idx);
+
+        if (rsNode ) {
+          if (rsNode['f_level'] == 0) throw new Error('최상위 노드는 추천인 등록이 불가능합니다.');
+        }
+
+        let rsRef = await dbHandler.getUserInfo(f_referralemail, 'f_email');
+
+        if (!rsRef) throw new Error(`변경할 추천인(${f_referralemail})을 찾을 수 없습니다.`);
+
+        let rsParentNodes = await dbHandler.getNode(rsRef.idx);
+
+        if (!rsParentNodes) throw new Error('추천인이 아직 계보도에 등록되어 있지않습니다.');
+
+        param.push(rsRef.idx);
+        status_query += ', f_referral = ? ';
+
+        let f_node = rsParentNodes['f_node'];
+
+        if (user.f_referralemail) {        
+          await dbHandler.exeQueryConn(conn, `update tb_node set f_useridx = ?, f_level = ?, f_node = ?, f_pIdx = ?, f_invtIdx = ? where f_useridx = ?`, 
+            [user.idx, rsParentNodes['f_level']+1, `:${user.idx}${f_node}`, rsRef.idx, rsRef.idx, user.idx]);
+
+          let rsOldParentNodes = await dbHandler.getNode(user.f_referral);      
+                    
+          if (rsOldParentNodes) await dbHandler.setReduceInvtSubNodeCount(conn, user.f_referral, rsOldParentNodes['f_node']);
+        } else {
+          await dbHandler.exeQueryConn(conn, `insert into tb_node (f_useridx, f_level, f_node, f_pIdx, f_invtIdx) values (?, ?, ?, ?, ?)`, 
+            [user.idx, rsParentNodes['f_level']+1, `:${user.idx}${f_node}`, rsRef.idx, rsRef.idx]);
+
+            param.push('2');
+            status_query += ', f_status = ? '    
+        }
+
+        await dbHandler.setAddInvtSubNodeCount(conn, rsRef.idx, f_node);
+
+      } else if (!f_referralemail && user.f_referralemail) {
+
+        status_query += ', f_referral = NULL ';
+        
+        await dbHandler.exeQueryConn(conn, 'delete from tb_node where f_useridx = ?', [user.idx]);
+
+        param.push('1');
+        status_query += ', f_status = ? '
+
+        let rsOldParentNodes = await dbHandler.getNode(user.f_referral);      
+                    
+        if (rsOldParentNodes) await dbHandler.setReduceInvtSubNodeCount(conn, user.f_referral, rsOldParentNodes['f_node']);
+      }
+      
+    } else if (f_status) {
+
+      if (user.f_referralemail && f_status == 1) throw new Error('계보도에 등록된 계정은 미등록 상태로 변경이 불가능 합니다.');
+
+      if (!user.f_referralemail && f_status != 1) throw new Error('계보도에 미등록된 계정은 미등록 상태에서 변경이 불가능 합니다.');
+
+      param.push(f_status);
+      status_query += ', f_status = ? '
+      
+    } 
+    
+    param.push(useridx);    
+
+    await dbHandler.exeQueryConn(conn, `
       Update tb_user 
       Set f_name = ?, f_memo = ? ${password_query} ${status_query} 
       Where idx = ?`, param);
 
-    await dbHandler.exeQuery(`
+    await dbHandler.exeQueryConn(conn, `
       Update tb_wallet 
       Set f_taddress = ? 
       Where f_useridx =?`, [f_taddress, useridx])
 
     rst.result = 100;
-  } catch (err) {    
 
+    await dbHandler.commit(conn);
+
+  } catch (err) {
     rst.msg = err.message;
     rst.result = rst.result||500;
 
-  } 
+    await dbHandler.rollback(conn);
+
+  } finally {
+    dbHandler.releaseConnection(conn);
+  }
 
   res.json(rst);
 }
@@ -265,12 +348,14 @@ exports.addUserInfo = async (req, res) => {
 
     conn = await dbHandler.getConnection();
 
+    await dbHandler.beginTransaction(conn);
+
     let rs = await dbHandler.exeQueryConn(conn, `
       Insert Into tb_user 
-        (f_email, f_pwd, f_name, f_status, f_memo, f_regAt) 
+        (f_email, f_pwd, f_name, f_status, f_memo) 
       Values 
         (?, ?, ?, ?, ?, ?)`, 
-      [f_email, f_pwd, f_name, f_status, f_memo, miscHandlers.getNow()]
+      [f_email, f_pwd, f_name, f_status, f_memo]
     );
 
     let useridx = rs[0].insertId;
@@ -296,6 +381,275 @@ exports.addUserInfo = async (req, res) => {
   } finally {
     dbHandler.releaseConnection(conn);
   }
+
+  res.json(rst);
+}
+
+exports.addUserExcel = async (req, res) => {
+  miscHandlers.trimStringProperties(req.query);
+
+  return res.render('user/addUserExcel');
+}
+
+exports.importNewAccountExcel = async (req, res) => {
+
+  const { fieldname, originalname, encoding, mimetype, destination, filename, path, size } = req.file
+  const { name } = req.body;   
+
+  let rst = {result: 0, data: null, filepath: null}
+
+  try {
+
+    let data = excelHandler.parseCSV_AccountList(path);
+    
+    if (!data) throw new Error('읽을 수 없는 형식입니다.');
+    
+    for(let el of data) {
+    
+      let rst = await dbHandler.getOneRow(`select * from tb_user where f_email = ? limit 1`, [el.referral]);
+      
+      el.chkref = rst?1:0;
+      el.chkref_status = rst?rst.f_status:0;
+      el.referralIdx = rst?rst.idx:0;
+
+      rst = await dbHandler.getOneRow(`select count(*) as cnt from tb_user where f_email = ?`, [el.account]);
+
+      el.chkaccount = rst.cnt;
+
+    }
+    
+    rst.data = data;
+    rst.filepath = path;
+
+    rst.result = 100;
+  } catch (err) {
+    rst.result = rst.result || 500;
+    rst.msg = err.message;      
+  }  
+    
+  res.json(rst);
+}
+
+exports.processNewAccountExcel = async (req, res) => {
+
+  let rst = {result: 0, data: null, msg:''}
+
+  let rstAccount = miscHandlers.getRequest(req.body.rstExcel, []);
+  
+  let conn = null;
+
+  try {
+    
+    if (!rstAccount || rstAccount.length == 0) throw new Error('등록할 신규 계정정보가 없습니다.');
+
+    conn = await dbHandler.getConnection();
+
+    await dbHandler.beginTransaction(conn);
+    
+    for(let e of rstAccount) {
+
+      let pwd = '$2b$10$040000';
+      let f_status = e.referralIdx?2:1;
+      let f_referral = e.referralIdx??0;
+
+      let params = {
+        f_email: e.account, 
+        f_pwd: pwd, 
+        f_name: e.name, 
+        f_status: f_status
+      }
+
+      if (f_referral) params['f_referral'] = e.referralIdx;
+      if (e.regat) params['f_regAt'] = e.regat;
+
+      let rs = await dbHandler.exeInsertConn(conn, 'tb_user', params);
+
+      let useridx = rs[0].insertId;
+
+      params = {
+        f_useridx: useridx,
+      }
+
+      await dbHandler.exeInsertConn(conn, 'tb_wallet', params);
+
+      let rsParentNodes = await dbHandler.getNode(e.referralIdx);
+
+      if (!rsParentNodes) throw new Error('알수없는 추천인이 있습니다.');
+
+      let f_node = rsParentNodes['f_node'];
+
+      params = {
+        f_useridx: useridx, 
+        f_level: rsParentNodes['f_level']+1, 
+        f_node: `:${useridx}${f_node}`, 
+        f_pIdx: e.referralIdx, 
+        f_invtIdx: e.referralIdx
+      }
+
+      await dbHandler.exeInsertConn(conn, 'tb_node', params);
+        
+      await dbHandler.setAddInvtSubNodeCount(conn, e.referralIdx, f_node);
+    }
+
+    await dbHandler.commit(conn);    
+    rst.result = 100;    
+  } catch (err) {
+    console.log(err);
+    await dbHandler.rollback(conn);
+    rst.result = rst.result || 500;
+    rst.msg = err.message;    
+  } finally {
+    dbHandler.releaseConnection(conn); 
+  }
+
+
+  res.json(rst);
+}
+
+
+exports.regCommission = async (req, res) => {
+  miscHandlers.trimStringProperties(req.query);
+
+  return res.render('user/regCommission');
+}
+
+exports.importCommissionExcel = async (req, res) => {
+
+  const { fieldname, originalname, encoding, mimetype, destination, filename, path, size } = req.file
+  const { name } = req.body;   
+
+  let rst = {result: 0, data: null, filepath: null}
+
+  try {
+
+    let data = excelHandler.parseCSV_CommissionList(path);
+    
+    if (!data) throw new Error('읽을 수 없는 형식입니다.');
+    
+    for(let el of data) {
+    
+      let rsUser = await dbHandler.getUserInfo(el.account, 'f_email');
+     
+      if (rsUser) {
+        el.name = rsUser.f_name;
+        el.chkaccount = 1;      
+        el.referral = rsUser.f_referralemail;
+        el.f_referral = rsUser.f_referral;
+        el.chkref = rsUser.f_referral?1:0;
+        el.chkref_status = rsUser.f_referral;
+
+      } else {
+        el.name = '';
+        el.chkaccount = 0;
+        el.referral = '';
+        el.f_referral = '';
+        el.chkref = 0;
+        el.chkref_status = 1;
+      }
+
+    }
+    
+    rst.data = data;
+    rst.filepath = path;
+
+    rst.result = 100;
+  } catch (err) {
+    rst.result = rst.result || 500;
+    rst.msg = err.message;      
+  }  
+    
+  res.json(rst);
+}
+
+exports.processCommissionExcel = async (req, res) => {
+
+  let rst = {result: 0, data: null, msg:''}
+
+  let rstComms = miscHandlers.getRequest(req.body.rstExcel, []);
+  
+  let conn = null;
+
+  try {
+    
+    if (!rstComms || rstComms.length == 0) throw new Error('등록할 커미션내역이 없습니다.');
+
+    conn = await dbHandler.getConnection();
+
+    await dbHandler.beginTransaction(conn);
+    
+    for(let e of rstComms) {
+
+      let rsUser = await dbHandler.getUserInfoConn(conn, e.account, 'f_email');
+
+      if (!rsUser) throw new Error(`${e.account} 알수없는 회원입니다`);
+
+      /** Ace 커미션 등록 */
+      let params = {
+        f_type: 2,
+        f_useridx: rsUser.idx,
+        f_amount: e.amount, 
+        f_balance: Number(rsUser.f_balance),
+      }
+
+      if (e['regat']) params['f_regAt'] = miscHandlers.getUtcTime(e['regat']);
+
+      await dbHandler.exeInsertConn(conn, 'tb_comms_log', params);
+
+      let rollupFee = await dbHandler.getSetting('trans.rollupfee');
+
+      rollupFee = rollupFee['trans.rollupfee'];
+
+      let rsNode = await dbHandler.getNode(rsUser.f_referral);
+
+      if (!rsNode) throw new Error(`${e.account} 추천인 정보가 없습니다`);
+
+      let nodes = rsNode['f_node'].split(':').filter((e)=>!!e);
+
+      if (nodes.length == 0) throw new Error(`${e.account} 잘못된 계보정보입니다`);
+
+      let feeLength = Object.keys(rollupFee).length;
+console.log(feeLength);
+      for(let i = 0; i < nodes.length; i++) {
+        let lv = i+1;
+        let fee = rollupFee[lv]??0;        
+
+      }
+
+      /*
+      await dbHandler.exeInsertConn(conn, 'tb_wallet', params);
+
+      let rsParentNodes = await dbHandler.getNode(e.referralIdx);
+
+      if (!rsParentNodes) throw new Error('알수없는 추천인이 있습니다.');
+
+      let f_node = rsParentNodes['f_node'];
+
+      params = {
+        f_useridx: useridx, 
+        f_level: rsParentNodes['f_level']+1, 
+        f_node: `:${useridx}${f_node}`, 
+        f_pIdx: e.referralIdx, 
+        f_invtIdx: e.referralIdx
+      }
+
+      await dbHandler.exeInsertConn(conn, 'tb_node', params);
+        
+      await dbHandler.setAddInvtSubNodeCount(conn, e.referralIdx, f_node);
+
+      */
+    }
+
+    await dbHandler.commit(conn);    
+    rst.result = 100;    
+  } catch (err) {
+    console.log(err);
+    await dbHandler.rollback(conn);
+    rst.result = rst.result || 500;
+    rst.msg = err.message;    
+  } finally {
+    dbHandler.releaseConnection(conn); 
+  }
+
 
   res.json(rst);
 }

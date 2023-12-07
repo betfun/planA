@@ -19,12 +19,19 @@ exports.catchErrors = (fn) => {
   If we hit a route that is not found, we mark it as 404 and pass it along to the next error handler to display
 */
 exports.notFound = (req, res, next) => {
-  
-  return res.render('extra/404');
+  if (req.xhr) {
+    return res.json({
+      result:404, 
+      msg:'Url doesn\'t exist',
+      rUrl: `_blank`
+    });
+  } else {       
+    return res.render('extra/404');
+  }
 
   res.status(404).json({
     success: false,
-    message: "Url doesn't exist ",
+    message: "Url doesn't exist",
   });
 };
 

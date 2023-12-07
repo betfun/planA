@@ -29,6 +29,8 @@ let appUtils = {
         target.classList.add('container-loading');
         target.appendChild(spinnerHtml);      
       }      
+    } else {
+      
     }
   },
   /* hide Loading bootstrap */

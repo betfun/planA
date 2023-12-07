@@ -21,7 +21,7 @@
   <link href="/assets/plugins/ionicons/css/ionicons.min.css" rel="stylesheet" />
   <link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
   <!-- ================== END core-css ================== -->
-  <link href="/assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <link href="/assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">  
   <link href="/assets/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" />
 
 </head>
@@ -104,9 +104,69 @@
                   <div class="menu-text">전체</div>
                 </a>
               </div>        
+              <div class="menu-item">
+                <a href="/user/addUserExcel?s_label=단체등록" class="menu-link">
+                  <div class="menu-text">단체등록</div>
+                </a>
+              </div>        
             </div>
           </div> 
 
+          <div class="menu-item has-sub expand">
+            <a href="javascript:;" class="menu-link">
+              <div class="menu-icon">
+                <i class="fa-solid fa-coins"></i>
+              </div>
+              <div class="menu-text">커미션</div>
+              <div class="menu-caret"></div>
+            </a>
+            <div class="menu-submenu" style="display: block;">
+              <div class="menu-item">
+                <a href="/user/regCommission" class="menu-link">
+                  <div class="menu-text">롤업등록</div>
+                </a>
+              </div>        
+            </div>
+          </div>              
+
+          <div class="menu-item has-sub expand">
+            <a href="javascript:;" class="menu-link">
+              <div class="menu-icon">                
+                <i class="fa-regular fa-file-lines"></i>
+              </div>
+              <div class="menu-text">로그</div>
+              <div class="menu-caret"></div>
+            </a>
+            <div class="menu-submenu" style="display: block;">
+              <div class="menu-item">
+                <a href="/history/translist?s_label=전송" class="menu-link">
+                  <div class="menu-text">전송</div>
+                </a>
+              </div>        
+              <div class="menu-item">
+                <a href="/history/commslist?s_label=커미션" class="menu-link">
+                  <div class="menu-text">커미션</div>
+                </a>
+              </div>        
+            </div>
+          </div> 
+
+          <div class="menu-item has-sub expand">
+            <a href="javascript:;" class="menu-link">
+              <div class="menu-icon">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+              </div>
+              <div class="menu-text">설정</div>
+              <div class="menu-caret"></div>
+            </a>
+            <div class="menu-submenu" style="display: block;">
+              <div class="menu-item">
+                <a href="/management/feeSetting" class="menu-link">
+                  <div class="menu-text">수수료관련</div>
+                </a>
+              </div>        
+            </div>
+          </div>           
 
           <!-- BEGIN minify-button -->
           <div class="menu-item d-flex">

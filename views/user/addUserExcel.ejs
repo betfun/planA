@@ -1,0 +1,205 @@
+<%- include('../header'); %>
+<!-- BEGIN breadcrumb -->
+<ol class="breadcrumb float-xl-end">
+  <li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
+  <li class="breadcrumb-item active">단체등록</li>
+</ol>
+<!-- END breadcrumb -->
+<!-- BEGIN page-header -->
+<h1 class="page-header mb-3">단체등록 <small><a target="_blank" href="/upload/account_sample.xlsx">샘플파일 다운로드</a></small></h1>
+<!-- END page-header -->
+
+<div class="row">
+  <div class="col-12">
+    <div class="panel panel-inverse">
+      <div class="panel-body">
+        <form id="import-form" class="d-none">
+          <input id="import-csv" type="file" name="csv" onchange="importCSV();">
+        </form>
+        <button class="btn btn-info" onclick="clickImport()">파일선택</button>
+      </div>
+      <div class="panel-footer">        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12" id="extra-form" style="display: none;">
+    <!-- BEGIN panel -->
+    <div class="panel panel-inverse" data-sortable-id="table-basic-1">
+      <!-- BEGIN panel-heading -->
+      <div class="panel-heading">
+        <h4 class="panel-title">등록 리스트</h4>
+        <div class="panel-heading-btn">
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand"><i class="fa fa-expand"></i></a>
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-success" data-toggle="panel-reload"><i class="fa fa-redo"></i></a>
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-toggle="panel-collapse"><i class="fa fa-minus"></i></a>
+          <a href="javascript:;" class="btn btn-xs btn-icon btn-danger" data-toggle="panel-remove"><i class="fa fa-times"></i></a>
+        </div>
+      </div>
+      <!-- END panel-heading -->
+      <!-- BEGIN panel-body -->
+      <div class="panel-body">
+        <!-- BEGIN table-responsive -->
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead class="text-center">
+                <th>NO</th>
+                <th class="text-nowrap">이름</th>
+                <th class="text-nowrap">이메일</th>                
+                <th class="text-nowrap">추천인</th>
+                <th class="text-nowrap">등록일</th>
+              </tr>
+            </thead>
+            <tbody id="extra-list" class="text-center"></tbody>
+          </table>
+          <div>
+            <button type="button" class="btn btn-primary mt-3 w-300px" onclick="processCSV(this, filepath);">회원등록</button>
+          </div>
+        </div>
+        <!-- END table-responsive -->
+      </div>
+      <!-- END panel-body -->
+    </div>
+    <!-- END panel -->
+  </div>
+</div>
+
+<script>
+
+  function clickImport() {    
+    $('#import-csv').click();
+  }
+
+  function processCSV(obj, filepath) {
+
+    let target = obj.closest('.panel');
+
+    if (isExsit) {    
+      appUtils.showAlert('이미 등록된 계정이 존재합니다. 확인해주세요.');
+      return;
+    }
+    
+    if (isNotReferral) {    
+      appUtils.showAlert('추천인의 계정이 존재하지 않습니다. 확인해주세요.');
+      return;
+    }    
+
+    if (isNotNode) {    
+      appUtils.showAlert('추천인이 계보도에 등록되지 않았습니다. 확인해주세요.');
+      return;
+    }    
+
+    if (isDelete) {    
+      appUtils.showAlert('삭제된 계정이 존재합니다. 확인해주세요.');
+      return;
+    }    
+
+    if (bProcessed) {    
+      alert('이미 처리된 데이터 입니다. 확인해 주세요');
+      return;
+    }    
+
+    appUtils.swalConfirm('처리하시겠습니까?', '', () => {
+      appUtils.showLoading(target);
+
+      appUtils.ajaxJSON('/user/processNewAccountExcel', {rstExcel: rstExcel}, 
+      (data) => {
+        switch(data['result']) {
+            case 100:
+              //location.reload();
+              appUtils.swalSuccess('전송되었습니다.');
+              bProcessed = true;
+              break;
+            default:
+              appUtils.swalFailed(data.msg||'');
+              break;
+          }
+          appUtils.hideLoading(target);
+      }, 
+      (e) => {
+        appUtils.hideLoading(target);
+        swalFailed('알수없는 오류가 발생했습니다.');
+      });
+    });
+  }
+
+  let bProcessed = false;;
+  let filepath = '';
+  let isExsit = false;
+  let isNotReferral = false;
+  let isNotNode = false;
+  let isDelete = false;
+
+  let rstExcel = null;
+
+  function importCSV() {  
+
+    if ($('#import-csv').val() == '') {
+      return;
+    }
+
+    bProcessed = false;    
+    isExsit = false;
+    isNotReferral = false;
+    isNotNode = false;
+    isDelete = false;
+    rstExcel = null;
+
+    $('.excel-item').remove();
+
+    var formData = new FormData($('#import-form')[0]);
+
+    appUtils.ajaxFileJSON('/user/importNewAccountExcel', formData, 
+    (data) => {
+      switch(data['result']) {
+          case 100:
+            $('#extra-form').show();
+            const t = $('#extra-list');
+            
+            rstExcel = data['data'];
+
+            data['data'].forEach((v, i) => {
+              let tr = $('<tr class="excel-item">');
+              tr.append(`<td>${i+1}</td>`);
+              tr.append(`<td>${v.name}</td>`);
+              if (v.chkaccount == 1) {
+                isExsit = true;
+                tr.append(`<td>${v.account}(<span class='text-danger'>등록</span>)</td>`);
+              } else {                
+                tr.append(`<td>${v.account}</td>`);
+              }
+              if (v.chkref == 1) {          
+                switch (v.chkref_status) {
+                  case 1:
+                    isNotNode = true;
+                    tr.append(`<td>${v.referral}(<span class='text-danger'>미조직</span>)</td>`);
+                    break;
+                  case 9:
+                    isDelete = true;
+                    tr.append(`<td>${v.referral}(<span class='text-grady'>삭제</span>)</td>`);
+                    break;                    
+                  default:
+                    tr.append(`<td>${v.referral}</td>`);
+                    break;
+                }
+              } else {            
+                isNotReferral = true;    
+                tr.append(`<td>${v.referral}(<span class='text-danger'>미등록</span>)</td>`);
+              }
+              tr.append(`<td>${v.regat}</td>`);
+              t.append(tr);
+            });
+            
+            filepath = data['filepath'];
+            break;
+          default:
+            alert( data.msg ?? '읽을 수 없는 파일 형식입니다.');
+            break;
+        }
+    });
+
+  }  
+
+</script>
+<%- include('../footer'); %>
