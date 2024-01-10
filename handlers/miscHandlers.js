@@ -49,6 +49,16 @@ module.exports = {
     }
   },
   /**
+   * 
+   * @param {*} num 
+   * @param {*} decimalPlaces 
+   * @returns 
+   */
+  getRoundNumber: function (num, decimalPlaces = 0) {
+    var p = Math.pow(10, decimalPlaces);
+    return Math.round((num +  + Number.EPSILON) * p) / p;
+  },
+  /**
    * Numbers with Comma, decimal place
    * marked by <Small> by the decimal point
    * @param {Number} _x 

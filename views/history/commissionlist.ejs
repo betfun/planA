@@ -17,7 +17,6 @@
       <div class="panel-heading">
         <h4 class="panel-title">
           리스트
-          <a href="javascript:;" onclick="wasUtils.addUserInfo()" class="btn btn-success btn-xs d-inline-block ms-2">신규회원 <i class="fa fa-plus"></i></a>
         </h4>
         <div class="panel-heading-btn">
           <a href="javascript:;" class="btn btn-xs btn-icon btn-default" data-toggle="panel-expand"><i class="fa fa-expand"></i></a>          
@@ -71,12 +70,12 @@
                     </select>
                   </div>
                   <div class="form-group dropdown-item">
-                    <label>상태</label>
-                    <select name="s_status" class="form-select form-select-sm">                      
+                    <label>구분</label>
+                    <select name="s_type" class="form-select form-select-sm">                                 
                       <%                                               
-                        for(let el in s_statusArray) {                                       
-                          let selected = (el == s_status)?'selected':'';
-                          __append(`<option value="${el}" ${selected}>${s_statusArray[el]}</option> `);
+                        for(let el in s_typeArray) {                                       
+                          let selected = (el == s_type)?'selected':'';
+                          __append(`<option value="${el}" ${selected}>${s_typeArray[el]}</option> `);
                         }
                       %>                          
                     </select>
@@ -113,12 +112,12 @@
                   <th class="text-nowrap w10 p-8px">
                     <input type="checkbox" class="form-check-input" onchange="$('input[name=transidx]').prop('checked', this.checked);">
                   </th>                  
-                  <th class="text-nowrap sorting <%-h.misc.checkOrder('U.f_name', s_order, s_orderdir)%>" data-order="U.f_name" onclick="wasUtils.setOrder(this)">이름</th>
-                  <th class="text-nowrap sorting <%-h.misc.checkOrder('U.f_email', s_order, s_orderdir)%>" data-order="U.f_email" onclick="wasUtils.setOrder(this)">이메일</th>
+                  <th class="text-nowrap">이름</th>
+                  <th class="text-nowrap">이메일</th>
+                  <th class="text-nowrap">롤업</th>
                   <th class="text-nowrap">구분</th>
-                  <th class="text-nowrap">수량</th>
-                  <th class="text-nowrap">주소</th>                  
-                  <th class="text-nowrap">상태</th>                  
+                  <th class="text-nowrap">커미션</th>     
+                  <th class="text-nowrap">요율(%)</th>     
                   <th class="text-nowrap w80 sorting <%-h.misc.checkOrder('A.idx', s_order, s_orderdir)%>" data-order="A.idx" onclick="wasUtils.setOrder(this)">등록일</th>
                 </tr>
               </thead>
@@ -133,27 +132,6 @@
                   } else { 
                     list.forEach(function(el, index) {
 
-                      let status = el.f_status;
-                      switch (status) {
-                        case 1:
-                          status = `대기`;
-                          break;
-                        case 2:
-                          status = `전송중`;
-                          break;
-                        case 3:
-                          status = `완료`;
-                          break;
-                        case 4:
-                          status = `실패`;
-                          break;
-                        case 9:
-                          status = `삭제`;
-                          break;
-                        default:
-                          break;
-                      }
-
                       let ttype = el.f_type;
                       switch (ttype) {
                         case 1:
@@ -161,9 +139,6 @@
                           break;                      
                         case 2:
                           ttype = '롤업';
-                          break;                      
-                        case 3:
-                          ttype = '출금';
                           break;                      
                         default:
                           break;
@@ -173,8 +148,12 @@
                   <td>
                     <input type="checkbox" class="form-check-input"  name="useridx" value="<%-el.idx%>">
                   </td>
-                  <td><%=el.f_name%></td>
-                  <td><%=el.f_email%></td>
+                  <td><%=el.f_refname%></td>
+                  <td><%=el.f_refemail%></td>
+                  <td>
+                    <%-el.f_name%><br>
+                    <%-el.f_email%>
+                  </td>
                   <td>
                     <%=ttype%>
                   </td>
@@ -182,10 +161,7 @@
                     <%-h.misc.setFormatNumberWithPlacesSmall(el.f_amount, 2, true)%>
                   </td>
                   <td class="text-end">
-                    
-                  </td>
-                  <td class="text-center">                    
-                    <%-status%>
+                    <%-Number(el.f_feerate)%>  
                   </td>
                   <td class="text-center">          
                     <%=h.misc.formatDateTime(el.f_regAt)%>

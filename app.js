@@ -28,7 +28,7 @@ app.set('view engine', 'ejs');
 
 const whitelist = [];
 
-if (process.env.NODE_ENV == 'development') whitelist.push(`http://127.0.0.1:${process.env.PORT}`);
+if (process.env.NODE_ENV == 'development') whitelist.push(`http://127.0.0.1:${process.env.PORT}`, `https://acemanager.betfun.biz`);
 
 const corsOptions = {
   origin: function (origin, callback) {

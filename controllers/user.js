@@ -583,21 +583,25 @@ exports.processCommissionExcel = async (req, res) => {
 
       if (!rsUser) throw new Error(`${e.account} 알수없는 회원입니다`);
 
+      let rsTransSetting = await dbHandler.getSetting('trans%', true);
+
+      let rollupFee = rsTransSetting['trans.rollupfee'];
+      let sumfee = rsTransSetting['trans.fee'];
+      let feeLength = rsTransSetting['trans.level'];
+
       /** Ace 커미션 등록 */
       let params = {
-        f_type: 2,
+        f_type: 1,
         f_useridx: rsUser.idx,
-        f_amount: e.amount, 
-        f_balance: Number(rsUser.f_balance),
+        f_amount: e.amount,
+        f_feerate: sumfee,
       }
 
       if (e['regat']) params['f_regAt'] = miscHandlers.getUtcTime(e['regat']);
 
-      await dbHandler.exeInsertConn(conn, 'tb_comms_log', params);
+      let rsIns = await dbHandler.exeInsertConn(conn, 'tb_comms_log', params);
 
-      let rollupFee = await dbHandler.getSetting('trans.rollupfee');
-
-      rollupFee = rollupFee['trans.rollupfee'];
+      let pidx = rsIns[0].insertId;
 
       let rsNode = await dbHandler.getNode(rsUser.f_referral);
 
@@ -606,37 +610,35 @@ exports.processCommissionExcel = async (req, res) => {
       let nodes = rsNode['f_node'].split(':').filter((e)=>!!e);
 
       if (nodes.length == 0) throw new Error(`${e.account} 잘못된 계보정보입니다`);
+      
+      let usedfee = 0;
 
-      let feeLength = Object.keys(rollupFee).length;
-console.log(feeLength);
-      for(let i = 0; i < nodes.length; i++) {
+      for(let i = 0; i < nodes.length && i < feeLength; i++) {
         let lv = i+1;
-        let fee = rollupFee[lv]??0;        
+        let fee = rollupFee[lv]??0;
+        let amount = miscHandlers.getRoundNumber(fee / sumfee, 2);
 
+        usedfee += fee;
+
+        if (nodes.length != feeLength && i+1 == nodes.length) {
+          fee = fee + (sumfee - usedfee);
+          amount = miscHandlers.getRoundNumber(fee / sumfee, 2);
+        }
+
+        params = {
+          f_type : 2,
+          f_useridx: rsUser.idx,
+          f_amount: e.amount * amount,
+          f_feerate: fee,
+          f_refidx: nodes[i],
+          f_pidx: pidx
+        }
+
+        if (e['regat']) params['f_regAt'] = miscHandlers.getUtcTime(e['regat']);
+
+        await dbHandler.exeInsertConn(conn, 'tb_comms_log', params);
       }
 
-      /*
-      await dbHandler.exeInsertConn(conn, 'tb_wallet', params);
-
-      let rsParentNodes = await dbHandler.getNode(e.referralIdx);
-
-      if (!rsParentNodes) throw new Error('알수없는 추천인이 있습니다.');
-
-      let f_node = rsParentNodes['f_node'];
-
-      params = {
-        f_useridx: useridx, 
-        f_level: rsParentNodes['f_level']+1, 
-        f_node: `:${useridx}${f_node}`, 
-        f_pIdx: e.referralIdx, 
-        f_invtIdx: e.referralIdx
-      }
-
-      await dbHandler.exeInsertConn(conn, 'tb_node', params);
-        
-      await dbHandler.setAddInvtSubNodeCount(conn, e.referralIdx, f_node);
-
-      */
     }
 
     await dbHandler.commit(conn);    
